@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">青悠菜园</string>
+    <string name="action_login">用户登录</string>
+    <string name="action_settings">设置</string>
+    <string name="title_section1">待称重</string>
+    <string name="title_section2">待付款</string>
+    <string name="title_section3">待配送</string>
+    <string name="title_section4">今日完成</string>
+    <string name="label_orderid">订单编号：</string>
+    <string name="label_ordertime">下单时间：</string>
+    <string name="label_customer">客户姓名：</string>
+    <string name="label_customerphone">电话：</string>
+    <string name="label_shipping_address">配送地址：</string>
+    <string name="label_shipping_time">收货时间：</string>
+    <string name="label_comment">客户留言：</string>
+    <string name="label_operation">管理操作：</string>
+    <string name="label_product_name">商品名称：</string>
+    <string name="label_product_name2">品名：</string>
+    <string name="label_price">单价：</string>
+    <string name="label_count">数量：</string>
+    <string name="label_total_pay">总价：</string>
+    <string name="label_realweight">称重：</string>
+    <string name="label_realtotalpay">实际应付：</string>
+    <string name="label_scan">扫描条码</string>
+    <string name="label_rescan">重扫</string>
+    <string name="label_deliver">确认配送完毕</string>
+    <string name="label_return">返回</string>
+    <string name="label_ok">确定</string>
+    <string name="ask_deliver">真的配送完毕吗？</string>
+    <string name="alert_nodata">没有订单数据</string>
+    <string name="alert_nocode">不是当前订单的条码</string>
+    <string name="alert_scaned">已扫描</string>
+    <string name="alert_errcode">错误的条码</string>
+    <string name="alert_scaled">该订单已经扫描完成</string>
+    <string name="scan_text">将条码放入框内, 即可自动扫描</string>
+    <string name="scan_title">称重条码扫描</string>
+    <string name="title_activity_activity_order_history">历史订单</string>
+    <string name="prompt_email">员工帐号</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in_short">登录</string>
+    <string name="title_activity_activity_login">用户登录</string>
+    <string name="label_logout">退出登录</string>
+    <string name="alert_login_err">登录失败</string>
+    <string name="label_login">请输入业务员帐号和密码：</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    
+</resources>

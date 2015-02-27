@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="transparent">#00000000</color>
+    <color name="global_background">#ececec</color>
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#0000FF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#080808</color>
+    <color name="producttext">#005500</color>
+    <color name="orange">#f17225</color>
+    <color name="red">#CCFF0000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+    <color name="main_index_bg">#FF545454</color>
+    <color name="main_index_text">#FFFFFFFF</color>
+    <color name="main_index_text2">#FFFF7418</color>
+    
+</resources>
