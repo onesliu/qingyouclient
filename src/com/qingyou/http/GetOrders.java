@@ -69,11 +69,13 @@ public class GetOrders extends HttpPacket {
 				o.order_createtime = order.getString("order_createtime");
 				o.customer_id = order.getInt("customer_id");
 				o.customer_name = order.getString("customer_name");
-				o.shipping_name = order.getString("shipping_name");
 				o.customer_phone = order.getString("customer_phone");
+				o.shipping_name = order.getString("shipping_name");
+				o.shipping_phone = order.getString("shipping_telephone");
 				o.shipping_addr = order.getString("shipping_addr");
 				o.shipping_time = order.getString("shipping_time");
-				o.comment = order.getString("comment");
+				o.iscash = order.getInt("iscash");
+				o.comment = "";
 				
 				productArr = order.getJSONArray("products");
 				
@@ -87,7 +89,12 @@ public class GetOrders extends HttpPacket {
 					p.product_name = product.getString("product_name");
 					p.product_type = product.getInt("product_type");
 					p.ean = product.getString("ean");
+					p.unit = product.getString("unit");
 					p.price = product.getDouble("price");
+					p.perprice = product.getDouble("perprice");
+					p.perweight = product.getDouble("perweight");
+					p.perunit = product.getString("perunit");
+					p.weightunit = product.getString("weightunit");
 					p.quantity = product.getInt("quantity");
 					p.total = product.getDouble("total");
 					p.realweight = product.getDouble("realweight");
@@ -95,6 +102,12 @@ public class GetOrders extends HttpPacket {
 					
 					if (o.order_status > OrderStatus.ORDER_STATUS_WAITING)
 						p.finishScan();
+					
+					if (p.product_type == 0) {
+						p.realweight = p.perweight * p.quantity;
+						p.realtotal = p.perprice * p.quantity;
+						p.finishScan();
+					}
 					
 					ordertype += p.product_type;
 					o.add_product(p);

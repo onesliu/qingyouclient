@@ -6,20 +6,12 @@
     android:orientation="vertical" >
 
     <ListView
-        android:id="@id/android:list"
+        android:id="@+id/order_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/global_background"
         android:drawSelectorOnTop="false"
         android:padding="0dp" />
-
-    <TextView
-        android:id="@id/android:empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical|center_horizontal"
-        android:text="@string/alert_nodata"
-        android:textColor="#FF0000" />
 
 </LinearLayout>

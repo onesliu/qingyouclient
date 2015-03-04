@@ -15,8 +15,8 @@ public class MyUtils {
 		return ret;
 	}
 	
-	static DecimalFormat df = new DecimalFormat("0.00");
-	static DecimalFormat df2 = new DecimalFormat("0.000");
+	static DecimalFormat df = new DecimalFormat("￥0.00");
+	static DecimalFormat df2 = new DecimalFormat("0");
 	static String cnv_price(double price) {
 		return df.format(price);
 	}

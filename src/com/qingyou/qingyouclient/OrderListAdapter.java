@@ -1,7 +1,5 @@
 package com.qingyou.qingyouclient;
 
-import java.util.Iterator;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,9 +18,7 @@ public class OrderListAdapter extends BaseAdapter {
 	private Context context;
 	private LayoutInflater listContainer;
 	private OrderList listItems;
-	private int page;
 	private int order_status;
-	private Iterator<Order> itr;
 
 	public final class ListItemView { // 自定义控件集合
 		public TextView OrderId;
@@ -36,26 +32,11 @@ public class OrderListAdapter extends BaseAdapter {
 		public TextView Comment;
 	}
 
-	public OrderListAdapter(Context context, OrderList listItems, int page) {
+	public OrderListAdapter(Context context, OrderList listItems, int order_status) {
 		this.context = context;
 		listContainer = LayoutInflater.from(context);
 		this.listItems = listItems;
-		this.page = page;
-		
-		itr = listItems.orders.iterator();
-		
-		switch(page) {
-		case ActivityMain.PAGE_1:
-			order_status = OrderStatus.ORDER_STATUS_WAITING;
-			break;
-		case ActivityMain.PAGE_2:
-			order_status = OrderStatus.ORDER_STATUS_PAYING;
-			break;
-		case ActivityMain.PAGE_3:
-			order_status = OrderStatus.ORDER_STATUS_SCALED;
-			break;
-		}
-
+		this.order_status = order_status;
 	}
 
 	@Override
@@ -66,7 +47,7 @@ public class OrderListAdapter extends BaseAdapter {
 	@Override
 	public Object getItem(int arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		return listItems.orders.get(arg0);
 	}
 
 	@Override
@@ -98,36 +79,31 @@ public class OrderListAdapter extends BaseAdapter {
 			itemView = (ListItemView)convertView.getTag();
 		}
 		
-		Order o = null;
-		while(itr.hasNext()) {
-			o = itr.next();
-			if (o.order_status_orign == order_status)
-				break;
-		}
+		Order o = listItems.get(order_status, position);
 		
-		if (o != null) {
+		if (o == null || o.order_id == 0)
+			return convertView;
 		
-			itemView.OrderId.setText(Long.toString(o.order_id));
-			itemView.OrderTime.setText(o.order_createtime);
-			itemView.Comment.setText(o.comment);
-			itemView.Customer.setText(o.shipping_name);
-			itemView.Phone.setText(o.customer_phone);
-			itemView.ProductSubject.setText(o.productSubject);
-			itemView.ShippingAddress.setText(o.shipping_addr);
-			itemView.ShippingTime.setText(o.shipping_time);
-			itemView.Status.setText(OrderStatus.getInstance().getStatus(o.order_status));
-			ActivityOrderDetail.setOrderStatusColor(itemView.Status, o.order_status);
+		itemView.OrderId.setText(Long.toString(o.order_id));
+		itemView.OrderTime.setText(o.order_createtime);
+		itemView.Comment.setText(o.comment);
+		itemView.Customer.setText(o.shipping_name);
+		itemView.Phone.setText(o.shipping_phone);
+		itemView.ProductSubject.setText(o.productSubject);
+		itemView.ShippingAddress.setText(o.shipping_addr);
+		itemView.ShippingTime.setText(o.shipping_time);
+		itemView.Status.setText(OrderStatus.getInstance().getStatus(o.order_status));
+		ActivityOrderDetail.setOrderStatusColor(itemView.Status, o.order_status);
+		
+		final String phone = itemView.Phone.getText().toString();
+		itemView.Phone.setOnClickListener(new View.OnClickListener() {
 			
-			final String phone = itemView.Phone.getText().toString();
-			itemView.Phone.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+ phone));
-					context.startActivity(intent);
-				}
-			});
-		}
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_CALL,Uri.parse("tel:"+ phone));
+				context.startActivity(intent);
+			}
+		});
 
 		return convertView;
 	}

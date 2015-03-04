@@ -15,193 +15,58 @@
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_launcher" />
 
-    <LinearLayout
+    <TableLayout
+        android:id="@+id/Product"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:orientation="vertical"
-        android:padding="2dp" >
+        android:padding="3dip"
+        android:stretchColumns="*" >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:orientation="horizontal" >
+        <TableRow>
 
             <TextView
                 android:id="@+id/ProductName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:text=""
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/Price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
                 android:text=""
                 android:textColor="@color/orange" />
+        </TableRow>
+
+        <TableRow>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/label_total_pay"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/Total"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text=""
-                android:textColor="@color/orange" />
-
-            <TextView
-                android:id="@+id/Rescan"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical|right"
-                android:gravity="right"
-                android:paddingRight="5dp"
-                android:text="@string/label_rescan"
-                android:textColor="@color/blue" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/OrderCountLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/label_count"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/OrderCount1"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
+                android:id="@+id/Quantity"
                 android:text="" />
 
             <TextView
-                android:id="@+id/OrderCount2"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
+                android:id="@+id/TotalPrice"
+                android:text="" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/PerWeight"
                 android:text="" />
 
             <TextView
-                android:id="@+id/OrderCount3"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
+                android:id="@+id/WeightTotal"
                 android:text="" />
+        </TableRow>
 
-            <TextView
-                android:id="@+id/OrderCount4"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/OrderCount5"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/OrderCount6"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/OrderCount7"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/OrderCount8"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="1dp"
-                android:background="@drawable/before_scan_circle"
-                android:gravity="center"
-                android:text="" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/label_realweight"
-                android:textStyle="bold" />
+        <TableRow>
 
             <TextView
                 android:id="@+id/RealWeight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.5"
                 android:text="" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/label_realtotalpay"
-                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/RealTotal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="0.5"
                 android:text="" />
-        </LinearLayout>
-    </LinearLayout>
+        </TableRow>
+    </TableLayout>
 
 </LinearLayout>

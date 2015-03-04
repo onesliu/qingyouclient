@@ -45,6 +45,25 @@ public class OrderList implements Serializable {
 		return null;
 	}
 	
+	public Order get(int order_status, int position) {
+		Order o = null;
+		int i = 0;
+		Iterator<Order> itr = orders.iterator();
+		while(itr.hasNext()) {
+			Order oo = itr.next();
+			if (oo.order_status == order_status) {
+				if (i == position) {
+					o = oo;
+					break;
+				}
+				else {
+					i++;
+				}
+			}
+		}
+		return o;
+	}
+	
 	public void add(Order order) {
 		orders.add(order);
 	}

@@ -12,6 +12,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.qingyou.businesslogic.OrderList;
+import com.qingyou.businesslogic.OrderStatus;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
@@ -29,9 +30,8 @@ public class OrderListFragment extends Fragment {
 
 	// TODO: Rename and change types of parameters
 	private int page;
+	private int order_status;
 	private String mParam2;
-
-	private OnFragmentInteractionListener mListener;
 
     private ListView mListView;
 
@@ -43,6 +43,7 @@ public class OrderListFragment extends Fragment {
 	 *            Parameter 1.
 	 * @param param2
 	 *            Parameter 2.
+	 * @return 
 	 * @return A new instance of fragment OrderListFragment.
 	 */
 	// TODO: Rename and change types and number of parameters
@@ -52,6 +53,7 @@ public class OrderListFragment extends Fragment {
 		args.putInt(ARG_PARAM1, page);
 		args.putString(ARG_PARAM2, param2);
 		fragment.setArguments(args);
+		
 		return fragment;
 	}
 
@@ -65,6 +67,19 @@ public class OrderListFragment extends Fragment {
 		if (getArguments() != null) {
 			page = getArguments().getInt(ARG_PARAM1);
 			mParam2 = getArguments().getString(ARG_PARAM2);
+
+			switch(page) {
+			case ActivityMain.PAGE_1:
+				order_status = OrderStatus.ORDER_STATUS_WAITING;
+				break;
+			case ActivityMain.PAGE_2:
+				order_status = OrderStatus.ORDER_STATUS_PAYING;
+				break;
+			case ActivityMain.PAGE_3:
+				order_status = OrderStatus.ORDER_STATUS_SCALED;
+				break;
+			}
+			
 		}
 	}
 	
@@ -72,48 +87,20 @@ public class OrderListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.order_list, container, false);
-		mListView = (ListView) view.findViewById(android.R.id.list);
+		mListView = (ListView) view.findViewById(R.id.order_list);
 		return view;
-	}
-
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed() {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(this);
-		}
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		try {
-			mListener = (OnFragmentInteractionListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement OnFragmentInteractionListener");
-		}
+		
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		mListener = null;
-	}
-
-	/**
-	 * This interface must be implemented by activities that contain this
-	 * fragment to allow an interaction in this fragment to be communicated to
-	 * the activity and potentially other fragments contained in that activity.
-	 * <p>
-	 * See the Android Training lesson <a href=
-	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-	 * >Communicating with Other Fragments</a> for more information.
-	 */
-	public interface OnFragmentInteractionListener {
-		// TODO: Update argument type and name
-		public void onFragmentInteraction(OrderListFragment frag);
 	}
 
 	private OrderListAdapter adapter = null;
@@ -130,6 +117,13 @@ public class OrderListFragment extends Fragment {
 		super.onResume();
 		setData();
 	}
+	
+	public void freshListView() {
+		if (mListView != null) {
+			adapter = null;
+			setData();
+		}
+	}
 
 	public void setData() {
 		if (adapter != null) {
@@ -141,19 +135,22 @@ public class OrderListFragment extends Fragment {
 				mListView.setAdapter(null);
 			}
 			else {
-		        adapter = new OrderListAdapter(getActivity(), listItems, page);
+		        adapter = new OrderListAdapter(getActivity(), listItems, order_status);
 		        mListView.setOnItemClickListener(new OnItemClickListener() {
 		            @Override
 		            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
-		        		gobj.put("orderindex", position);
 		        		Intent intent = new Intent();
 		        		intent.setClass(getActivity(), ActivityOrderDetail.class);
+		        		intent.putExtra("order_status", order_status);
+		        		intent.putExtra("position", position);
 		        		startActivity(intent);
 		            }
 		        });
 		        mListView.setAdapter(adapter);
 			}
+			
 		}
 	}
+	
 
 }

@@ -20,7 +20,7 @@ public class UserLogin extends HttpPacket {
 			params.add("redirect", HttpPacket.SERVER_URL + "?route=qingyou/login_ok");
 		}
 		url = HttpPacket.SERVER_URL + "?route=common/login";
-		
+		Log.d(input.getString("account") + "," + input.getString("passwd") + "," + HttpPacket.SERVER_URL + "?route=qingyou/login_ok");
 		return 0;
 	}
 
@@ -44,11 +44,11 @@ public class UserLogin extends HttpPacket {
 			data.putInt("session", HttpUtility.cookieSize());
 		} catch(JSONException e) {
 			errNo = ERR_RESPONSE_INVALID;
-			Log.v("PROTO:(UserLogin) Error");
+			errMsg = "解析登录结果出错";
+			System.out.println(response);
 			e.printStackTrace();
+			Log.v("PROTO:(UserLogin) Error");
 		}
-
-		//System.out.println(response);
 	}
 
 }

@@ -4,10 +4,16 @@ import java.math.BigDecimal;
 
 public class Product {
 	public int product_id;
+	public int plu_serial_no;
 	public String product_name;
 	public int product_type;
 	public String ean;
 	public double price;
+	public double perprice;
+	public double perweight;
+	public String unit;
+	public String perunit;
+	public String weightunit;
 	public int quantity;
 	public double total;
 	public double realweight;

@@ -11,11 +11,13 @@ public class Order {
 	public String order_createtime;
 	public int customer_id;
 	public String customer_name;
-	public String shipping_name;
 	public String customer_phone;
+	public String shipping_name;
+	public String shipping_phone;
 	public String shipping_addr;
 	public String shipping_time;
 	public String comment;
+	public int iscash;
 	
 	public int order_type;
 	public int order_status_orign;

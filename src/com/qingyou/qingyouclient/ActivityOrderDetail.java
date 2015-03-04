@@ -8,10 +8,11 @@ import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.qingyou.businesslogic.Order;
@@ -31,14 +32,15 @@ public class ActivityOrderDetail extends Activity {
 	TextView txtShippingAddress;
 	TextView txtShippingTime;
 	TextView txtComment;
+	TextView txtOrderTotalPrice;
 	ListView listProduct;
 	Button btnDeliver;
 	PruductAdapter adapter;
+	ScrollView mainScroll;
 	
 	OrderList orderlist;
 	Order order;
 	Product product;
-	private int orderIndex;
 	
 	private final static int SCANNIN_GREQUEST_CODE = 1;
 	private ParseBarCode parseBarCode = new ParseBarCode();
@@ -51,33 +53,54 @@ public class ActivityOrderDetail extends Activity {
 	
 	@Override
 	protected void onStart() {
-		ObjectMap gobj = ObjectMap.getInstance();
-		if (gobj.get("orders") == null && gobj.getInt("orderindex") != null) {
-			finish();
-			return;
-		}
+		Intent intent = getIntent();
+		int order_status = (int)intent.getIntExtra("order_status", -1);
+		int position = (int)intent.getIntExtra("position", -1);
 		
 		findViews();
 		
 		orderlist = OrderList.getGlobal();
-		orderIndex = (int)gobj.getInt("orderindex");
-		order = orderlist.orders.get(orderIndex);
+		order = orderlist.get(order_status, position);
+		if (order == null ) {
+			finish();
+			return;
+		}
+		
 		adapter = new PruductAdapter(this, order.products);
-		adapter.setOrder(order);
 		listProduct.setAdapter(adapter);
+		setListViewHeightBasedOnChildren(listProduct);
+		mainScroll.smoothScrollTo(0,20);
 		
 		txtOrderId.setText(Long.toString(order.order_id));
 		txtOrderTime.setText(order.order_createtime);
 		txtCustomer.setText(order.shipping_name);
-		txtPhone.setText(order.customer_phone);
+		txtPhone.setText(order.shipping_phone);
 		txtShippingAddress.setText(order.shipping_addr);
 		txtShippingTime.setText(order.shipping_time);
 		txtComment.setText(order.comment);
+		txtOrderTotalPrice.setText(MyUtils.cnv_price(order.getOrderRealTotal()));
 
 		freshViewStatus();
 
 		super.onStart();
 	}
+	
+	public void setListViewHeightBasedOnChildren(ListView listView) {    
+        ListAdapter listAdapter = listView.getAdapter();    
+        if (listAdapter == null) {    
+            return;    
+        }    
+        int totalHeight = 0;    
+        for (int i = 0; i < listAdapter.getCount(); i++) {    
+            View listItem = listAdapter.getView(i, null, listView);    
+            listItem.measure(0, 0);   
+            totalHeight += listItem.getMeasuredHeight();    
+        }    
+        ViewGroup.LayoutParams params = listView.getLayoutParams();    
+        params.height = totalHeight    
+                + (listView.getDividerHeight() * (listAdapter.getCount() + 1));    
+        listView.setLayoutParams(params);    
+    }
 
 	public void freshViewStatus() {
 		
@@ -99,15 +122,18 @@ public class ActivityOrderDetail extends Activity {
 		txtShippingTime = (TextView)findViewById(R.id.dtShippingTime);
 		txtComment = (TextView)findViewById(R.id.dtComment);
 		btnDeliver = (Button)findViewById(R.id.btnDeliver);
+		txtOrderTotalPrice = (TextView)findViewById(R.id.dtOrderTotalPrice);
 
 		listProduct = (ListView)findViewById(R.id.listViewProduct);
+		mainScroll = (ScrollView)findViewById(R.id.dtMainScroll);
+		/*
 		listProduct.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				startCodeScan();
 			}
 		});
-		
+		*/
 		
 	}
 	
