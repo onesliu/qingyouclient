@@ -48,13 +48,16 @@ public class ActivityQuerySettings extends PreferenceActivity {
 		Bundle specials = intent.getExtras();
 		
 		Set<String> keySet = specials.keySet();
-		String []entries = new String[keySet.size()];
+		String []entries = new String[keySet.size()+1];
 		entries = keySet.toArray(entries);
 		
 		String []values = new String[entries.length];
 		for(int i = 0; i < entries.length; i++) {
 			values[i] = "" + specials.getInt(entries[i]);
 		}
+		
+		entries[entries.length-1] = "非预订产品";
+		values[entries.length-1] = "0";
 		
 		PreOrderPreference.setEntries(entries);
 		PreOrderPreference.setEntryValues(values);
