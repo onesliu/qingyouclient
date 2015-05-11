@@ -4,28 +4,99 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Order {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-	public long order_id;
-	public int order_status;
-	public String order_createtime;
-	public int customer_id;
-	public String customer_name;
-	public String customer_phone;
-	public String shipping_name;
-	public String shipping_phone;
-	public String shipping_addr;
-	public String shipping_time;
-	public String comment;
-	public int iscash;
+public class Order implements Parcelable {
+
+	public long order_id = 0;
+	public int order_status = 0;
+	public String order_createtime = "";
+	public int customer_id = 0;
+	public String customer_name = "";
+	public String customer_phone = "";
+	public String shipping_name = "";
+	public String shipping_phone = "";
+	public String shipping_addr = "";
+	public String shipping_time = "";
+	public String comment = "";
+	public double costpay = 0;
+	public double cashpay = 0;
+	public int iscash = 0;
 	
-	public int order_type;
-	public int order_status_orign;
-	public String productSubject;
+	public int order_type = 0;
+	public int order_status_orign = 0;
+	public String productSubject = "";
 	public boolean is_delete = false;
 
 	public List<Product> products;
 	
+	//=========================Parcel======================================
+	
+	public Order(Parcel in) {
+		order_id = in.readLong();
+		order_status = in.readInt();
+		order_createtime = in.readString();
+		customer_id = in.readInt();
+		customer_name = in.readString();
+		customer_phone = in.readString();
+		shipping_name = in.readString();
+		shipping_phone = in.readString();
+		shipping_addr = in.readString();
+		shipping_time = in.readString();
+		comment = in.readString();
+		iscash = in.readInt();
+		order_type = in.readInt();
+		order_status_orign = in.readInt();
+		productSubject = in.readString();
+		is_delete = (in.readInt()>0)?true:false;
+		products = new ArrayList<Product>();
+		in.readTypedList(products, Product.CREATOR);
+	}
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeLong(order_id);
+		dest.writeInt(order_status);
+		dest.writeString(order_createtime);
+		dest.writeInt(customer_id);
+		dest.writeString(customer_name);
+		dest.writeString(customer_phone);
+		dest.writeString(shipping_name);
+		dest.writeString(shipping_phone);
+		dest.writeString(shipping_addr);
+		dest.writeString(shipping_time);
+		dest.writeString(comment);
+		dest.writeInt(iscash);
+		dest.writeInt(order_type);
+		dest.writeInt(order_status_orign);
+		dest.writeString(productSubject);
+		dest.writeInt((is_delete)?1:0);
+		dest.writeTypedList(products);
+	}
+	
+	public static final Parcelable.Creator<Order> CREATOR = new Creator<Order>() {
+
+		@Override
+		public Order createFromParcel(Parcel source) {
+			Order o = new Order(source);
+			return o;
+		}
+
+		@Override
+		public Order[] newArray(int size) {
+			return new Order[size];
+		}
+	
+	};
+	
+	//===============================================================
+
 	public Order() {
 		products = new ArrayList<Product>();
 	}

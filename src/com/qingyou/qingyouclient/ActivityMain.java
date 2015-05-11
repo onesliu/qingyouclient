@@ -79,7 +79,7 @@ public class ActivityMain extends FragmentActivity implements
 						actionBar.setSelectedNavigationItem(position);
 					}
 				});
-
+		
 		// For each of the sections in the app, add a tab to the action bar.
 		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
 			// Create a tab with text corresponding to the page title defined by
@@ -108,9 +108,11 @@ public class ActivityMain extends FragmentActivity implements
 		case id.action_login:
 			intent.setClass(this, ActivityLogin.class);
 			break;
+		/*
 		case id.action_settings:
 			intent.setClass(this, ActivitySettings.class);
 			break;
+		*/
 		}
 
 		startActivity(intent);
@@ -258,7 +260,7 @@ public class ActivityMain extends FragmentActivity implements
 			if (intent.getAction().equals("qingyou.net.trans")) {
 				Bundle b = intent.getExtras();
 				int msgid = b.getInt("msgid");
-				AlertToast.showAlert(ActivityMain.this, b.getString("msg"));
+				//AlertToast.showAlert(ActivityMain.this, b.getString("msg"));
 
 				switch (msgid) {
 				case HttpThread.NET_ORDER_REFRESH:
@@ -274,10 +276,12 @@ public class ActivityMain extends FragmentActivity implements
 						((OrderListFragment) fragments[ActivityMain.PAGE_3])
 								.setData();
 					}
+					/*
 					if (fragments[ActivityMain.PAGE_4] != null) {
 						((OrderListFragment) fragments[ActivityMain.PAGE_4])
 								.setData();
 					}
+					*/
 					break;
 				case HttpThread.NET_ERROR:
 					AlertToast.showAlert(ActivityMain.this, b.getString("msg"));

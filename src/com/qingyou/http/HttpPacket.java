@@ -18,7 +18,8 @@ public abstract class HttpPacket {
 	public static final int ERR_PASSWD_INVALID = -2;
 	public static final int ERR_RESPONSE_INVALID = -3;
 	
-	protected static final String SERVER_URL = "http://qy.gz.1251102575.clb.myqcloud.com/admin/index.php";
+	protected static final String SERVER_DIR = "http://qy.gz.1251102575.clb.myqcloud.com/";
+	protected static final String SERVER_URL = SERVER_DIR + "admin/index.php";
 	
 	protected Handler handler;
 	protected Context context = null;
@@ -85,6 +86,7 @@ public abstract class HttpPacket {
 		
 		class SyncThread extends Thread {
 			public String rlt;
+			public Exception exp = null;
 			@Override
 			public void run() {
                 try {
@@ -92,7 +94,7 @@ public abstract class HttpPacket {
             			rlt = HttpUtility.openUrl(context, url, httpMethod, params);
             		}
                 } catch (Exception e) {
-                	e.printStackTrace();
+                	exp = e;
                 }
             }
 		};
@@ -103,6 +105,10 @@ public abstract class HttpPacket {
 			t.join();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+		}
+		
+		if (t.exp != null) {
+			throw (ProtocolException)t.exp;
 		}
         return t.rlt;
     }
@@ -115,6 +121,8 @@ public abstract class HttpPacket {
 	
 	protected int SyncRequest(String httpMethod)
 	{
+		errNo = HttpPacket.ERR_NONE;
+		errMsg = "";
 		try {
 			String resp = request(context, url, params, httpMethod);
 			processResult(resp);

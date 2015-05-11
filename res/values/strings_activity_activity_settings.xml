@@ -1,9 +1,48 @@
 <resources>
 
     <string name="title_activity_activity_settings">设置</string>
+    <string name="title_activity_activity_query_settings">订单查询条件</string>
 
     <!-- Strings related to Settings -->
 
+    <!-- settings for Query order -->
+    <string name="pref_header_query">订单查询</string>
+    <string name="pref_query_today_title">查询当天订单</string>
+    <string name="pref_query_today_desp">查询当天全部订单，不包括预订产品</string>
+    
+    <string name="pref_query_date_title">下单日期</string>
+    
+    <string name="pref_query_order_status_title">订单状态</string>
+    <string-array name="pref_query_order_status_titles">
+        <item>所有状态</item>
+        <item>未完成订单</item>
+        <item>已完成订单</item>
+        <item>待称重</item>
+        <item>待付款</item>
+        <item>待配送</item>
+        <item>已完成</item>
+        <item>已退款</item>
+        <item>已取消</item>
+    </string-array>
+    <string-array name="pref_query_order_status_values">
+        <item>0</item>
+        <item>7</item>
+        <item>8</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+    
+    <string name="pref_query_preorder_title">预订商品</string>
+    <string-array name="pref_query_preorder_titles">
+        <item>无预订</item>
+    </string-array>
+    <string-array name="pref_query_preorder_values">
+        <item>0</item>
+    </string-array>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

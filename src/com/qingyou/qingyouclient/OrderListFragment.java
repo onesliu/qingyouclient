@@ -1,18 +1,25 @@
 package com.qingyou.qingyouclient;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.qingyou.businesslogic.OrderList;
 import com.qingyou.businesslogic.OrderStatus;
+import com.qingyou.http.HttpThread;
 
 /**
  * A simple {@link android.support.v4.app.Fragment} subclass. Activities that
@@ -78,6 +85,9 @@ public class OrderListFragment extends Fragment {
 			case ActivityMain.PAGE_3:
 				order_status = OrderStatus.ORDER_STATUS_SCALED;
 				break;
+			case ActivityMain.PAGE_4:
+				order_status = 0;
+				break;
 			}
 			
 		}
@@ -87,9 +97,48 @@ public class OrderListFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.order_list, container, false);
-		mListView = (ListView) view.findViewById(R.id.order_list);
+		View view;
+		if (page < ActivityMain.PAGE_4) {
+			view = inflater.inflate(R.layout.order_list, container, false);
+			mListView = (ListView) view.findViewById(R.id.order_list);
+		}
+		else {
+			view = inflater.inflate(R.layout.query_list, container, false);
+			mListView = (ListView) view.findViewById(R.id.query_list);
+
+			Button query_btn = (Button) view.findViewById(R.id.query_btn);
+			query_btn.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					HttpThread http = HttpThread.getInstance(null);
+					if (http == null) return;
+					Bundle specials = http.GetSpecials();
+					
+					Intent intent = new Intent();
+					intent.setClass(getActivity(), ActivityQuerySettings.class);
+					intent.putExtras(specials);
+					startActivityForResult(intent, 200);
+				}
+			});
+			
+			Button query_btn2 = (Button) view.findViewById(R.id.query_btn2);
+			query_btn2.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					queryOrder();
+				}
+			});
+		}
 		return view;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 200) {
+			queryOrder();
+		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -104,7 +153,7 @@ public class OrderListFragment extends Fragment {
 	}
 
 	private OrderListAdapter adapter = null;
-	ObjectMap gobj = ObjectMap.getInstance();
+	private static OrderList querylist;
 
 	@Override
 	public void onStart() {
@@ -124,33 +173,74 @@ public class OrderListFragment extends Fragment {
 			setData();
 		}
 	}
-
+	
 	public void setData() {
 		if (adapter != null) {
 			adapter.notifyDataSetChanged();
 		}
 		else {
-			OrderList listItems = OrderList.getGlobal();
-			if (listItems == null) {
-				mListView.setAdapter(null);
-			}
-			else {
-		        adapter = new OrderListAdapter(getActivity(), listItems, order_status);
-		        mListView.setOnItemClickListener(new OnItemClickListener() {
-		            @Override
-		            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
-		        		Intent intent = new Intent();
-		        		intent.setClass(getActivity(), ActivityOrderDetail.class);
-		        		intent.putExtra("order_status", order_status);
-		        		intent.putExtra("position", position);
-		        		startActivity(intent);
-		            }
-		        });
-		        mListView.setAdapter(adapter);
-			}
-			
+			if (page < ActivityMain.PAGE_4)
+				setData(OrderList.getGlobal());
+			else if (page == ActivityMain.PAGE_4)
+				setData(querylist);
+		}
+	}
+
+	public void setData(OrderList orderlist) {
+		
+		final OrderList listItems = orderlist;
+		if (listItems == null) {
+			mListView.setAdapter(null);
+		}
+		else {
+	        adapter = new OrderListAdapter(getActivity(), listItems, order_status);
+	        mListView.setOnItemClickListener(new OnItemClickListener() {
+	            @Override
+	            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
+	        		Intent intent = new Intent();
+	        		intent.setClass(getActivity(), ActivityOrderDetail.class);
+	        		intent.putExtra("order_status", order_status);
+	        		intent.putExtra("position", position);
+	        		intent.putExtra("order_list", listItems);
+	        		startActivity(intent);
+	            }
+	        });
+	        mListView.setAdapter(adapter);
 		}
 	}
 	
+	public void queryOrder() {
+		Bundle params = new Bundle();
+		
+		SharedPreferences shp = PreferenceManager.getDefaultSharedPreferences(getActivity());  
+		boolean query_order_today = shp.getBoolean("query_order_today", true); 
+		String query_order_date = shp.getString("query_order_date", "");
+		int query_order_status = Integer.parseInt(shp.getString("query_order_status", "0"));
+		int query_preorder = Integer.parseInt(shp.getString("query_preorder", "0"));
+		
+		Calendar calendar=Calendar.getInstance();
+		Date now = calendar.getTime();
+		String curdate = MyUtils.formatDate(now);
+		
+		if (query_order_today == true) {
+			params.putString("date", curdate);
+		}
+		else {
+			if (query_order_date.equals(""))
+				query_order_date = curdate;
+			params.putString("date", query_order_date);
+			if (query_order_status > 0)
+				params.putString("status", "" + query_order_status);
+			if (query_preorder > 0)
+				params.putString("special_id", "" + query_preorder);
+		}
+		
+		HttpThread http = HttpThread.getInstance(null);
+		if (http == null) return;
+		querylist = http.QueryOrders(params);
+		if (querylist != null) {
+			setData(querylist);
+		}
+	}
 
 }

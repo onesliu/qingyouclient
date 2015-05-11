@@ -12,6 +12,7 @@ import com.qingyou.businesslogic.Order;
 import com.qingyou.businesslogic.OrderList;
 import com.qingyou.businesslogic.OrderStatus;
 import com.qingyou.businesslogic.Product;
+import com.qingyou.businesslogic.ProductImageList;
 import com.qingyou.qingyouclient.Log;
 
 public class GetOrders extends HttpPacket {
@@ -19,6 +20,7 @@ public class GetOrders extends HttpPacket {
 	@Override
 	public int makeSendBuffer(Bundle input) {
 		
+		params.clear();
 		params.add("route", "qingyou/order_query");
 		params.add("token", input.getString("token"));
 		url = HttpPacket.SERVER_URL;
@@ -37,7 +39,7 @@ public class GetOrders extends HttpPacket {
 			OrderList newlist = parseOrderList(response);
 			if (newlist != null) {
 				errNo = ERR_NONE;
-				data.putSerializable("newlist", newlist);
+				data.putParcelable("newlist", newlist);
 			}
 			else {
 				errNo = ERR_RESPONSE_INVALID;
@@ -75,12 +77,13 @@ public class GetOrders extends HttpPacket {
 				o.shipping_addr = order.getString("shipping_addr");
 				o.shipping_time = order.getString("shipping_time");
 				o.iscash = order.getInt("iscash");
+				o.costpay = order.getDouble("costpay");
+				o.order_type = order.getInt("order_type");
 				o.comment = "";
 				
 				productArr = order.getJSONArray("products");
 				
 				productSubject = "";
-				int ordertype = 0;
 				for(int j = 0; j < productArr.length(); j++) {
 					product = productArr.getJSONObject(j);
 
@@ -99,25 +102,27 @@ public class GetOrders extends HttpPacket {
 					p.total = product.getDouble("total");
 					p.realweight = product.getDouble("realweight");
 					p.realtotal = product.getDouble("realtotal");
+					p.image = product.getString("image");
+					ProductImageList.instance().putImage(p.image);
 					
 					if (o.order_status > OrderStatus.ORDER_STATUS_WAITING)
 						p.finishScan();
 					
-					if (p.product_type == 0) {
-						p.realweight = p.perweight * p.quantity;
-						p.realtotal = p.perprice * p.quantity;
+					if (p.product_type != 1 && o.order_status < OrderStatus.ORDER_STATUS_FINISHED) {
+						if (p.ean.equals("1")) {
+							p.realtotal = 0;
+							p.realweight = 0;
+						}
+						else {
+							p.realweight = p.perweight * p.quantity;
+							p.realtotal = p.perprice * p.quantity;
+						}
 						p.finishScan();
 					}
 					
-					ordertype += p.product_type;
 					o.add_product(p);
 					productSubject += product.getString("product_name") + " ";
 				}
-				
-				if (ordertype == 0)
-					o.order_type = 0; //0:固定客单价订单, 1:变客单价订单
-				else
-					o.order_type = 1;
 				
 				o.productSubject = productSubject;
 				olist.add(o);

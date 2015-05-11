@@ -1,20 +1,55 @@
 package com.qingyou.businesslogic;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.qingyou.qingyouclient.ObjectMap;
 import com.qingyou.qingyouclient.SoundPlayer;
 
 //OrderList 只记录状态变化了的订单，包括产品被称重状态的变化
-public class OrderList implements Serializable {
+public class OrderList implements Parcelable {
 
-	private static final long serialVersionUID = 285587324980181222L;
 	public List<Order> orders;
+	
+	//=========================Parcel======================================
+	
+	public OrderList(Parcel in) {
+		orders = new ArrayList<Order>();
+		in.readTypedList(orders, Order.CREATOR);
+	}
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeTypedList(orders);
+	}
+	
+	public static final Parcelable.Creator<OrderList> CREATOR = new Creator<OrderList>() {
+
+		@Override
+		public OrderList createFromParcel(Parcel source) {
+			OrderList ol = new OrderList(source);
+			return ol;
+		}
+
+		@Override
+		public OrderList[] newArray(int size) {
+			return new OrderList[size];
+		}
+	
+	};
+	
+	//===============================================================
 	
 	public static OrderList getGlobal() {
 		ObjectMap gobj = ObjectMap.getInstance();
@@ -172,4 +207,5 @@ public class OrderList implements Serializable {
 	public void sortByTime() {
 		Collections.sort(orders, new SortByTime());
 	}
+
 }

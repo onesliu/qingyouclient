@@ -12,19 +12,23 @@ public class BootBroadcast extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent mintent) {
 		if (Intent.ACTION_BOOT_COMPLETED.equals(mintent.getAction())) {
-			// 启动完成
-			Intent intent = new Intent(context, Alarmreceiver.class);
-			intent.setAction("qingyou.alarm.action");
-			PendingIntent sender = PendingIntent.getBroadcast(context, 0,
-					intent, 0);
-			long firstime = SystemClock.elapsedRealtime();
-			AlarmManager am = (AlarmManager) context
-					.getSystemService(Context.ALARM_SERVICE);
-
-			// 30秒一个周期，不停的发送广播
-			am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstime,
-					20 * 1000, sender);
+			setAlarm(context);
 		}
+	}
+
+	public static void setAlarm(Context context) {
+		// 启动完成
+		Intent intent = new Intent(context, Alarmreceiver.class);
+		intent.setAction("qingyou.alarm.action");
+		PendingIntent sender = PendingIntent.getBroadcast(context, 0,
+				intent, 0);
+		long firstime = SystemClock.elapsedRealtime();
+		AlarmManager am = (AlarmManager) context
+				.getSystemService(Context.ALARM_SERVICE);
+
+		// 30秒一个周期，不停的发送广播
+		am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstime,
+				20 * 1000, sender);
 	}
 
 }

@@ -16,6 +16,7 @@ public class GetStatus extends HttpPacket {
 	@Override
 	public int makeSendBuffer(Bundle input) {
 		
+		params.clear();
 		params.add("route", "qingyou/order_query/status");
 		params.add("token", input.getString("token"));
 		url = HttpPacket.SERVER_URL;

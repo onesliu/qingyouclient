@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.qingyou.businesslogic.Order;
 import com.qingyou.businesslogic.OrderList;
-import com.qingyou.qingyouclient.ActivityMain;
 
 public class HttpThread {
 	
@@ -16,6 +16,7 @@ public class HttpThread {
 	public static final int LOGIN_OK = 2;
 	public static final int LOGIN_FAIL = 3;
 	public static final int NET_ORDER_REFRESH = 4;
+	public static final int COMMIT_ORDER = 5;
 
 	private static HttpThread _self = null;
 	public boolean isLogin = false;
@@ -34,6 +35,9 @@ public class HttpThread {
 
 	private UserLogin login = new UserLogin();
 	private GetOrders orders = new GetOrders();
+	private SetOrders setorder = new SetOrders();
+	private GetSpecials specials = new GetSpecials();
+	private QueryOrders queryorder = new QueryOrders();
 	private Bundle data = new Bundle();
 	
 	private Context c;
@@ -75,6 +79,7 @@ public class HttpThread {
 		if (isLogin == false) {
 			this.user = user;
 			this.password = pwd;
+			data.clear();
 			data.putString("account", user);
 			data.putString("passwd", pwd);
 			login.makeSendBuffer(data);
@@ -98,8 +103,64 @@ public class HttpThread {
 		return isLogin;
 	}
 	
+	public boolean commitOrder(Order o, int order_status) {
+		data.clear();
+		data.putString("token", token);
+		data.putParcelable("order", o);
+		data.putInt("order_status", order_status);
+		if (setorder.makeSendBuffer(data) != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "订单参数错误");
+			Log.e(setorder.getClass().getSimpleName(), setorder.getErrStr());
+			return false;
+		}
+		
+		if (setorder.SyncRequest("POST") != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "提交订单出错");
+			Log.e(setorder.getClass().getSimpleName(), setorder.getErrStr());
+			return false;
+		}
+
+		sendMsg(COMMIT_ORDER, "提交订单成功");
+		return true;
+	}
+	
 	public OrderList GetOrders() {
 		return (OrderList) orders.data.getSerializable("orderlist");
+	}
+	
+	public OrderList QueryOrders(Bundle params) {
+		data.clear();
+		data.putString("token", token);
+		data.putAll(params);
+		queryorder.makeSendBuffer(data);
+		if (queryorder.SyncRequest("GET") != HttpPacket.ERR_NONE) {
+			isLogin = false;
+			sendMsg(NET_ERROR, "订单获取出错");
+			Log.e(queryorder.getClass().getSimpleName(), queryorder.getErrStr());
+			return null;
+		}
+
+		OrderList nlist = (OrderList)queryorder.data.getParcelable("querylist");
+		nlist.sortByTime();
+		return nlist;
+	}
+	
+	public Bundle GetSpecials() {
+		data.clear();
+		data.putString("token", token);
+		if (specials.makeSendBuffer(data) != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "取预订商品参数错误");
+			Log.e(specials.getClass().getSimpleName(), specials.getErrStr());
+			return null;
+		}
+		
+		if (specials.SyncRequest("GET") != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "取预订商品出错");
+			Log.e(specials.getClass().getSimpleName(), specials.getErrStr());
+			return null;
+		}
+
+		return specials.data.getBundle("specials");
 	}
 
 	private void sendMsg(int msgid, String str) {
@@ -151,14 +212,14 @@ public class HttpThread {
 					}
 					else {
 						OrderList olist = OrderList.getGlobal();
-						OrderList nlist = (OrderList)orders.data.getSerializable("newlist");
+						OrderList nlist = (OrderList)orders.data.getParcelable("newlist");
 						olist.mergeOrderList(nlist);
 						olist.sortByTime();
 						sendMsg(NET_ORDER_REFRESH, "订单获取成功");
 					}
 				}
 				
-				for(int i = 0; i < 10; i++) {
+				for(int i = 0; i < 20; i++) {
 					if (stop == true) break;
 					if (conti == true) {
 						conti = false;

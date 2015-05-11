@@ -1,0 +1,33 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:disableDependentsState="true"
+        android:key="query_order_today"
+        android:summary="@string/pref_query_today_desp"
+        android:title="@string/pref_query_today_title" />
+
+    <com.qingyou.qingyouclient.DatePreference
+        android:dependency="query_order_today"
+        android:key="query_order_date"
+        android:title="@string/pref_query_date_title" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:dependency="query_order_today"
+        android:entries="@array/pref_query_order_status_titles"
+        android:entryValues="@array/pref_query_order_status_values"
+        android:key="query_order_status"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_query_order_status_title" />
+    <ListPreference
+        android:dependency="query_order_today"
+        android:entries="@array/pref_query_preorder_titles"
+        android:entryValues="@array/pref_query_preorder_values"
+        android:key="query_preorder"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_query_preorder_title" />
+
+</PreferenceScreen>

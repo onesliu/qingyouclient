@@ -30,10 +30,15 @@ public class MyUtils {
         if (0 == time) {
             return "";
         }
-        
+
         return mDateFormat.format(new Date(time));
     }
-
+	
+	static String formatDate(Date date) {
+		SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		return mDateFormat.format(date);
+	}
+	
 	static void callNetTrans(Context c, int msgid, Bundle data) {
 		Intent intent = new Intent();
 		intent.setAction("qingyou.net.trans");

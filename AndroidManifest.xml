@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -20,14 +20,16 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:persistent="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.qingyou.qingyouclient.ActivityMain"
+            android:name=".ActivityMain"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -37,11 +39,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.qingyou.qingyouclient.ActivityOrderListNew"
+            android:name=".ActivityOrderListNew"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.qingyou.qingyouclient.ActivityOrderDetail"
+            android:name=".ActivityOrderDetail"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -51,16 +53,20 @@
             android:windowSoftInputMode="stateAlwaysHidden" >
         </activity>
         <activity
-            android:name="com.qingyou.qingyouclient.ActivityLogin"
+            android:name=".ActivityLogin"
             android:label="@string/title_activity_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.qingyou.qingyouclient.ActivitySettings"
+            android:name=".ActivitySettings"
             android:label="@string/title_activity_activity_settings" >
         </activity>
         <activity
-            android:name="com.qingyou.qingyouclient.ActivityOrderHistory"
+            android:name=".ActivityQuerySettings"
+            android:label="@string/title_activity_activity_query_settings" >
+        </activity>
+        <activity
+            android:name=".ActivityOrderHistory"
             android:label="@string/title_activity_activity_order_history"
             android:parentActivityName="android.app.ListActivity" >
             <meta-data
@@ -69,20 +75,20 @@
         </activity>
 
         <receiver
-            android:name="com.qingyou.qingyouclient.BootBroadcast"
+            android:name=".BootBroadcast"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED" >
-            <intent-filter>
+            <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.qingyou.qingyouclient.Alarmreceiver" >
-            <intent-filter>
+        <receiver android:name=".Alarmreceiver" >
+            <intent-filter android:priority="1000" >
                 <action android:name="qingyou.alarm.action" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name="com.qingyou.qingyouclient.ConnectService"
+            android:name=".ConnectService"
             android:enabled="true"
             android:exported="true" >
         </service>

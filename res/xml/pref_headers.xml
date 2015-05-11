@@ -1,7 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <!-- These settings headers are only used on tablets. -->
-
     <header
         android:fragment="com.qingyou.qingyouclient.ActivitySettings$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
@@ -11,5 +11,8 @@
     <header
         android:fragment="com.qingyou.qingyouclient.ActivitySettings$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
-
+	<header
+        android:fragment="com.qingyou.qingyouclient.ActivitySettings$QueryOrderPreferenceFragment"
+        android:title="@string/pref_header_query" />
+	
 </preference-headers>

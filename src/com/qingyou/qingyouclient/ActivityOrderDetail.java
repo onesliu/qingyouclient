@@ -2,14 +2,17 @@ package com.qingyou.qingyouclient;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -20,6 +23,7 @@ import com.qingyou.businesslogic.OrderList;
 import com.qingyou.businesslogic.OrderStatus;
 import com.qingyou.businesslogic.ParseBarCode;
 import com.qingyou.businesslogic.Product;
+import com.qingyou.http.HttpThread;
 import com.qingyou.qr_codescan.MipcaActivityCapture;
 
 public class ActivityOrderDetail extends Activity {
@@ -33,6 +37,7 @@ public class ActivityOrderDetail extends Activity {
 	TextView txtShippingTime;
 	TextView txtComment;
 	TextView txtOrderTotalPrice;
+	TextView txtPreTotal;
 	ListView listProduct;
 	Button btnDeliver;
 	PruductAdapter adapter;
@@ -54,14 +59,18 @@ public class ActivityOrderDetail extends Activity {
 	@Override
 	protected void onStart() {
 		Intent intent = getIntent();
-		int order_status = (int)intent.getIntExtra("order_status", -1);
+		int order_status = (int)intent.getIntExtra("order_status", 0);
 		int position = (int)intent.getIntExtra("position", -1);
 		
 		findViews();
 		
-		orderlist = OrderList.getGlobal();
-		order = orderlist.get(order_status, position);
+		orderlist = intent.getParcelableExtra("order_list");
+		if (order_status > 0 && position >= 0)
+			order = orderlist.get(order_status, position);
+		else
+			order = orderlist.orders.get(position);
 		if (order == null ) {
+			super.onStart();
 			finish();
 			return;
 		}
@@ -78,9 +87,15 @@ public class ActivityOrderDetail extends Activity {
 		txtShippingAddress.setText(order.shipping_addr);
 		txtShippingTime.setText(order.shipping_time);
 		txtComment.setText(order.comment);
+		
+		txtPreTotal.setText(MyUtils.cnv_price(order.getOrderTotal()));
 		txtOrderTotalPrice.setText(MyUtils.cnv_price(order.getOrderRealTotal()));
 
 		freshViewStatus();
+		
+		IntentFilter filter = new IntentFilter();
+		filter.addAction("qingyou.net.trans");
+		registerReceiver(transfer, filter);
 
 		super.onStart();
 	}
@@ -123,6 +138,7 @@ public class ActivityOrderDetail extends Activity {
 		txtComment = (TextView)findViewById(R.id.dtComment);
 		btnDeliver = (Button)findViewById(R.id.btnDeliver);
 		txtOrderTotalPrice = (TextView)findViewById(R.id.dtOrderTotalPrice);
+		txtPreTotal = (TextView)findViewById(R.id.dtPreTotal);
 
 		listProduct = (ListView)findViewById(R.id.listViewProduct);
 		mainScroll = (ScrollView)findViewById(R.id.dtMainScroll);
@@ -185,7 +201,9 @@ public class ActivityOrderDetail extends Activity {
 	}
 
 	public void changeStatusText(int status) {
-		txtOrderStatus.setText(OrderStatus.getInstance().getStatus(status));
+		String cashpay = "";
+		if (order.iscash > 0) cashpay = getString(R.string.label_cashpay);
+		txtOrderStatus.setText(OrderStatus.getInstance().getStatus(status) + cashpay);
 		setOrderStatusColor(txtOrderStatus, status);
 	}
 
@@ -213,21 +231,104 @@ public class ActivityOrderDetail extends Activity {
 		}
 	}
 	
+	private void commit() {
+		HttpThread http = HttpThread.getInstance(null);
+		if (http == null) return;
+		http.commitOrder(order, OrderStatus.ORDER_STATUS_FINISHED);
+	}
+	
 	public void onClickDelivered(View v) {
-    	new AlertDialog.Builder(this)
-    	.setIcon(getResources().getDrawable(android.R.drawable.ic_dialog_alert))
+		final EditText input = new EditText(this);
+		//input.setInputType(type);
+		
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setIcon(getResources().getDrawable(android.R.drawable.ic_dialog_alert))
     	.setTitle(R.string.ask_deliver)
     	.setPositiveButton(R.string.label_ok, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				order.setDelivered();
-				txtOrderStatus.setText(OrderStatus.getInstance().getStatus(order.order_status));
-				finish();
+				if (order.iscash > 0) {
+					
+					if (input.getText().toString().equals("")) {
+						AlertToast.showAlert(ActivityOrderDetail.this, "到付订单必须输入收款金额");
+						return;
+					}
+					
+					double cashpay = 0;
+					try {
+						cashpay = Double.parseDouble(input.getText().toString());
+					}
+					catch(Exception e) {
+						AlertToast.showAlert(ActivityOrderDetail.this, "收款金额输入不正确");
+						return;
+					}
+					
+					if (cashpay <= 0) {
+						AlertToast.showAlert(ActivityOrderDetail.this, "收款金额输入不正确");
+						return;
+					}
+					
+					order.cashpay = cashpay;
+					
+					double offset = Math.abs(order.cashpay - order.getOrderRealTotal());
+					if (offset > 1) {
+						new AlertDialog.Builder(ActivityOrderDetail.this)
+						.setIcon(getResources().getDrawable(android.R.drawable.ic_dialog_alert))
+						.setTitle("实收金额与订单金额差距" + offset + "元,继续吗？")
+						.setPositiveButton(R.string.label_ok, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								commit();
+							}
+						})
+						.setNegativeButton(R.string.label_return, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+							}
+						})
+						.show();
+					}
+					else {
+						commit();
+					}
+				}
+				else {
+					commit();
+				}
 			}
 		})
 		.setNegativeButton(R.string.label_return, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 			}
-		})
-		.show();
+		});
+		
+		if (order.iscash > 0)
+			builder.setView(input);
+		builder.show();
 	}
+	
+	@Override
+	protected void onStop() {
+		unregisterReceiver(transfer);
+		super.onStop();
+	}
+	
+	private BroadcastReceiver transfer = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.getAction().equals("qingyou.net.trans")) {
+				Bundle b = intent.getExtras();
+				int msgid = b.getInt("msgid");
+				
+				switch(msgid) {
+				case HttpThread.COMMIT_ORDER:
+					AlertToast.showAlert(ActivityOrderDetail.this, b.getString("msg"));
+					ActivityOrderDetail.this.finish();
+					break;
+				case HttpThread.NET_ERROR:
+					AlertToast.showAlert(ActivityOrderDetail.this, b.getString("msg"));
+					break;
+				}
+			}
+		}
+		
+	};
 }

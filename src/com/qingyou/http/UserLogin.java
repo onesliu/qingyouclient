@@ -14,6 +14,7 @@ public class UserLogin extends HttpPacket {
 	@Override
 	public int makeSendBuffer(Bundle input) {
 		
+		params.clear();
 		if (input.getString("account") != null) {
 			params.add("username", input.getString("account"));
 			params.add("password", input.getString("passwd"));

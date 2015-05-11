@@ -18,11 +18,18 @@ public class SetOrders extends HttpPacket {
 	@Override
 	public int makeSendBuffer(Bundle input) {
 		
-		params.add("orders", makeOrderList());
-		//System.out.println(params.getValue("orders"));
+		params.clear();
+		if (input.getParcelable("order") == null)
+			return -1;
+		if (input.getInt("order_status", 0) == 0)
+			return -1;
+		String ojson = makeOrderList((Order)input.getParcelable("order"), input.getInt("order_status"));
+		if (ojson.equals(""))
+			return -1;
+		params.add("orders", ojson);
 		url = HttpPacket.SERVER_URL + "?route=qingyou/order_query/commit&token=" + input.getString("token");
 		
-		return 0;
+		return ERR_NONE;
 	}
 
 	@Override
@@ -51,43 +58,43 @@ public class SetOrders extends HttpPacket {
 		}
 	}
 	
-	public static String makeOrderList() {
+	public static String makeOrderList(Order oorder, int order_status) {
 		JSONArray orderArr, productArr;
 		JSONObject order, product;
-		OrderList olist = OrderList.getGlobal();
+
+		if (oorder == null) return "";
 	
 		try {
 			
 			orderArr = new JSONArray();
-			for(int i = 0; i < olist.size(); i++) {
-				Order oorder = olist.orders.get(i);
-				if (oorder.hasChanged() == false) continue;
-				
-				order = new JSONObject();
-				order.put("order_id", oorder.order_id);
-				order.put("order_status", oorder.order_status);
-				order.put("total", oorder.getOrderTotal());
-				order.put("realtotal", oorder.getOrderRealTotal());
-				order.put("order_type", oorder.order_type);
-				order.put("order_createtime", oorder.order_createtime);
-				order.put("productSubject", oorder.productSubject);
-				if (oorder.product_size() > 0) {
-					productArr = new JSONArray();
-					for(int j = 0; j < oorder.product_size(); j++) {
-						Product oproduct = oorder.products.get(j);
-						product = new JSONObject();
-						product.put("product_id", oproduct.product_id);
-						product.put("realweight", oproduct.realweight);
-						product.put("realtotal", oproduct.realtotal);
-						
-						productArr.put(product);
-					}
+			
+			order = new JSONObject();
+			order.put("order_id", oorder.order_id);
+			order.put("order_status", order_status);
+			order.put("total", oorder.getOrderTotal());
+			order.put("realtotal", oorder.getOrderRealTotal());
+			order.put("order_type", oorder.order_type);
+			order.put("order_createtime", oorder.order_createtime);
+			order.put("productSubject", oorder.productSubject);
+			order.put("costpay", oorder.costpay);
+			order.put("cashpay", oorder.cashpay);
+			
+			if (oorder.product_size() > 0) {
+				productArr = new JSONArray();
+				for(int j = 0; j < oorder.product_size(); j++) {
+					Product oproduct = oorder.products.get(j);
+					product = new JSONObject();
+					product.put("product_id", oproduct.product_id);
+					product.put("realweight", oproduct.realweight);
+					product.put("realtotal", oproduct.realtotal);
 					
-					order.put("products", productArr);
+					productArr.put(product);
 				}
 				
-				orderArr.put(order);
+				order.put("products", productArr);
 			}
+			
+			orderArr.put(order);
 
 			return orderArr.toString();
 		} catch(JSONException e) {

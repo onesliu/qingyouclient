@@ -1,5 +1,7 @@
 package com.qingyou.qingyouclient;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -43,6 +45,7 @@ public class ConnectService extends Service {
 		
 		IntentFilter filter = new IntentFilter();
 		filter.addAction("qingyou.net.trans");
+		filter.setPriority(1000);
 		registerReceiver(transfer, filter);
 		
         SoundPlayer.newInstance(this);
@@ -62,8 +65,7 @@ public class ConnectService extends Service {
 		
 		unregisterReceiver(transfer);
 		
-    	ObjectMap gobj = ObjectMap.getInstance();
-    	gobj.clear();
+    	stopForeground(true);
 		super.onDestroy();
 	}
 
@@ -89,6 +91,14 @@ public class ConnectService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.i(this.getClass().getSimpleName(), "Data Service onStartCommand");
+		flags = START_STICKY;
+		Notification notification = new Notification(R.drawable.ic_launcher,  
+				 getString(R.string.app_name), System.currentTimeMillis());
+		PendingIntent pendingintent = PendingIntent.getActivity(this, 0,  
+				 new Intent(this, ActivityMain.class), 0);
+		notification.setLatestEventInfo(this, "ConnectService", "请保持程序在后台运行",  
+				 pendingintent);
+		startForeground(0x111, notification);
 		return super.onStartCommand(intent, flags, startId);
 	}
 

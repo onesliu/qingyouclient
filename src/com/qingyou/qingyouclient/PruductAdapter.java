@@ -3,13 +3,16 @@ package com.qingyou.qingyouclient;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.qingyou.businesslogic.Product;
+import com.qingyou.businesslogic.ProductImageList;
 
 public class PruductAdapter extends BaseAdapter {
 
@@ -18,6 +21,7 @@ public class PruductAdapter extends BaseAdapter {
 	private List<Product> listItems;
 	
 	public final class ListItemView { // 自定义控件集合
+		public ImageView image;
 		public TextView ProductName;
 		public TextView Price;
 		public TextView Quantity;
@@ -58,6 +62,7 @@ public class PruductAdapter extends BaseAdapter {
 		if (convertView == null) {
 			itemView = new ListItemView();
 			convertView = listContainer.inflate(R.layout.product_item, null);
+			itemView.image = (ImageView)convertView.findViewById(R.id.imageProduct);
 			itemView.ProductName = (TextView)convertView.findViewById(R.id.ProductName);
 			itemView.Price = (TextView)convertView.findViewById(R.id.Price);
 			itemView.Quantity = (TextView)convertView.findViewById(R.id.Quantity);
@@ -75,6 +80,11 @@ public class PruductAdapter extends BaseAdapter {
 		
 		final Product p = listItems.get(position);
 
+		Bitmap bmp = ProductImageList.instance().getImage(p.image);
+		if (bmp != null)
+			itemView.image.setImageBitmap(bmp);
+		else
+			ProductImageList.instance().putImage(p.image);
 		itemView.ProductName.setText(p.product_name);
 		itemView.Price.setText(MyUtils.cnv_price(p.price) + "/" + p.unit);
 		itemView.Quantity.setText("" + p.quantity + p.perunit);

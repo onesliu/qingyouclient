@@ -41,6 +41,8 @@ public class OrderListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
+		if (order_status == 0)
+			return listItems.size();
 		return listItems.size_status(order_status);
 	}
 
@@ -79,7 +81,11 @@ public class OrderListAdapter extends BaseAdapter {
 			itemView = (ListItemView)convertView.getTag();
 		}
 		
-		Order o = listItems.get(order_status, position);
+		Order o;
+		if (order_status == 0)
+			o = listItems.orders.get(position);
+		else
+			o = listItems.get(order_status, position);
 		
 		if (o == null || o.order_id == 0)
 			return convertView;
@@ -92,7 +98,9 @@ public class OrderListAdapter extends BaseAdapter {
 		itemView.ProductSubject.setText(o.productSubject);
 		itemView.ShippingAddress.setText(o.shipping_addr);
 		itemView.ShippingTime.setText(o.shipping_time);
-		itemView.Status.setText(OrderStatus.getInstance().getStatus(o.order_status));
+		String cashpay = "";
+		if (o.iscash > 0) cashpay = context.getString(R.string.label_cashpay);
+		itemView.Status.setText(OrderStatus.getInstance().getStatus(o.order_status) + cashpay);
 		ActivityOrderDetail.setOrderStatusColor(itemView.Status, o.order_status);
 		
 		final String phone = itemView.Phone.getText().toString();
