@@ -17,6 +17,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.qingyou.businesslogic.Order;
 import com.qingyou.businesslogic.OrderList;
@@ -279,10 +280,7 @@ public class ActivityOrderDetail extends Activity {
 								commit();
 							}
 						})
-						.setNegativeButton(R.string.label_return, new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-							}
-						})
+						.setNegativeButton(R.string.label_return, null)
 						.show();
 					}
 					else {
@@ -294,15 +292,99 @@ public class ActivityOrderDetail extends Activity {
 				}
 			}
 		})
-		.setNegativeButton(R.string.label_return, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-			}
-		});
+		.setNegativeButton(R.string.label_return, null);
 		
 		if (order.iscash > 0)
 			builder.setView(input);
 		builder.show();
 	}
+	
+	public void onClickFunction(View v) {
+		functionDialog();
+	}
+	
+	private String selectedName;
+	private int select_which;
+	private void functionDialog() {
+
+		final String[] names = getResources().getStringArray(R.array.order_feature);
+		select_which = 0;
+		selectedName = names[select_which];
+        new AlertDialog.Builder(this)
+             .setTitle(R.string.label_function)
+             .setSingleChoiceItems(names, 0, new DialogInterface.OnClickListener() {
+                     @Override
+                     public void onClick(DialogInterface dialog, int which) {
+                    	 selectedName = names[which];
+                    	 select_which = which;
+                     }
+                 })
+             .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                     @Override
+                     public void onClick(DialogInterface dialog, int which) {
+                    	 int status = -1;
+                    	 
+                         switch(select_which) {
+                         case 0:
+                        	 status = OrderStatus.ORDER_STATUS_WAITING;
+                        	 break;
+                         case 1:
+                        	 status = OrderStatus.ORDER_STATUS_PAYING;
+                        	 break;
+                         case 2:
+                        	 status = OrderStatus.ORDER_STATUS_SCALED;
+                        	 break;
+                         case 3:
+                        	 status = OrderStatus.ORDER_STATUS_SCALED;
+                        	 order.iscash = 1;
+                        	 break;
+                         case 4:
+                        	 status = OrderStatus.ORDER_STATUS_FINISHED;
+                        	 break;
+                         case 5:
+                        	 status = OrderStatus.ORDER_STATUS_REFUND;
+                        	 break;
+                         case 6:
+                        	 status = OrderStatus.ORDER_STATUS_CANCEL;
+                        	 break;
+                         }
+                         
+                         final int order_status = status;
+
+                         new AlertDialog.Builder(ActivityOrderDetail.this)
+                         .setIcon(getResources().getDrawable(android.R.drawable.ic_dialog_alert))
+                         .setTitle(selectedName + ",继续吗？")
+                         .setPositiveButton(R.string.label_ok, new DialogInterface.OnClickListener() {
+                        	 public void onClick(DialogInterface dialog, int which) {
+    	                         HttpThread http = HttpThread.getInstance(null);
+    	                 		 if (http == null) return;
+
+    	                 		 boolean ret = false;
+    	                 		 if (select_which >=0 && select_which <= 6 && order_status >= 0) {
+    	                 			 ret = http.commitOrder(order, order_status);
+    	                 		 }
+    	                 		 else if (select_which == 7) {
+    	                 			 ret = http.PayQuery(order.order_id);
+    	                 		 }
+    	                 		 else if (select_which == 8) {
+    	                 			 ret = http.AlertPay(order.order_id);
+    	                 		 }
+    	                 		 
+    	                 		 if (ret) {
+    	                 			 AlertToast.showAlert(ActivityOrderDetail.this, selectedName + " 成功");
+    	                 		 }
+    	                 		 else {
+    	                 			 AlertToast.showAlert(ActivityOrderDetail.this, selectedName + " 失败");
+    	                 		 }
+                        	 }
+                         })
+                         .setNegativeButton(R.string.label_return, null)
+                         .show();
+                     }
+                 })
+             .setNegativeButton("取消", null)
+             .show();
+	 }
 	
 	@Override
 	protected void onStop() {

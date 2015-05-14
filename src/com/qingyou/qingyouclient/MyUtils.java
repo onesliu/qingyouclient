@@ -1,8 +1,11 @@
 package com.qingyou.qingyouclient;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.http.ParseException;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,18 +28,31 @@ public class MyUtils {
 		return df2.format(w);
 	}
 	
-	static SimpleDateFormat mDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+	static SimpleDateFormat mDateFormat = (SimpleDateFormat)DateFormat.getDateInstance();
 	static String formatDateTime(long time) {
-        if (0 == time) {
-            return "";
-        }
-
+        mDateFormat.applyPattern("MM-dd HH:mm");
         return mDateFormat.format(new Date(time));
     }
 	
 	static String formatDate(Date date) {
-		SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		mDateFormat.applyPattern("yyyy-MM-dd");
 		return mDateFormat.format(date);
+	}
+	
+	static String formatDate(long time) {
+		mDateFormat.applyPattern("yyyy-MM-dd");
+		return mDateFormat.format(time);
+	}
+	
+	static Date parseDate(String date) {
+		Date d = null;
+		try {
+			mDateFormat.applyPattern("yyyy-MM-dd");
+			d = mDateFormat.parse(date);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return d;
 	}
 	
 	static void callNetTrans(Context c, int msgid, Bundle data) {

@@ -181,11 +181,21 @@
 
                 <Button
                     android:id="@+id/btnDeliver"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
+                    android:layout_weight="0.5"
                     android:onClick="onClickDelivered"
                     android:text="@string/label_deliver" />
+
+                <Button
+                    android:id="@+id/btnFunction"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:layout_weight="0.5"
+                    android:onClick="onClickFunction"
+                    android:text="@string/label_function" />
             </LinearLayout>
         </LinearLayout>
 

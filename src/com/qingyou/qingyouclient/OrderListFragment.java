@@ -122,17 +122,41 @@ public class OrderListFragment extends Fragment {
 				}
 			});
 			
-			Button query_btn2 = (Button) view.findViewById(R.id.query_btn2);
+			query_btn2 = (Button) view.findViewById(R.id.query_btn2);
 			query_btn2.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					queryOrder();
 				}
 			});
+			
+			query_prior = (Button) view.findViewById(R.id.query_prior);
+			query_prior.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					freshQueryBtn(true, moveDate(query_btn2.getText().toString(), -1));
+					queryOrder(query_btn2.getText().toString());
+				}
+			});
+			query_next = (Button) view.findViewById(R.id.query_next);
+			query_next.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					freshQueryBtn(true, moveDate(query_btn2.getText().toString(), 1));
+					queryOrder(query_btn2.getText().toString());
+				}
+			});
+			
+			SharedPreferences shp = PreferenceManager.getDefaultSharedPreferences(getActivity());  
+			boolean query_order_today = shp.getBoolean("query_order_today", true);
+			
+			freshQueryBtn(query_order_today, getCurDate());
+			if (query_order_today)
+				queryOrder(query_btn2.getText().toString());
 		}
 		return view;
 	}
-
+	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 200) {
@@ -154,6 +178,9 @@ public class OrderListFragment extends Fragment {
 
 	private OrderListAdapter adapter = null;
 	private static OrderList querylist;
+	private Button query_btn2;
+	private Button query_prior;
+	private Button query_next;
 
 	@Override
 	public void onStart() {
@@ -213,14 +240,14 @@ public class OrderListFragment extends Fragment {
 		Bundle params = new Bundle();
 		
 		SharedPreferences shp = PreferenceManager.getDefaultSharedPreferences(getActivity());  
-		boolean query_order_today = shp.getBoolean("query_order_today", true); 
+		boolean query_order_today = shp.getBoolean("query_order_today", true);
 		String query_order_date = shp.getString("query_order_date", "");
 		int query_order_status = Integer.parseInt(shp.getString("query_order_status", "0"));
 		int query_preorder = Integer.parseInt(shp.getString("query_preorder", "0"));
 		
-		Calendar calendar=Calendar.getInstance();
-		Date now = calendar.getTime();
-		String curdate = MyUtils.formatDate(now);
+		String curdate = getCurDate();
+		
+		freshQueryBtn(query_order_today, curdate);
 		
 		if (query_order_today == true) {
 			params.putString("date", curdate);
@@ -242,5 +269,45 @@ public class OrderListFragment extends Fragment {
 			setData(querylist);
 		}
 	}
+
+	public void queryOrder(String qdate) {
+		Bundle params = new Bundle();
+		params.putString("date", qdate);
+		HttpThread http = HttpThread.getInstance(null);
+		if (http == null) return;
+		querylist = http.QueryOrders(params);
+		if (querylist != null) {
+			setData(querylist);
+		}
+	}
+
+	private String getCurDate() {
+		Calendar calendar=Calendar.getInstance();
+		Date now = calendar.getTime();
+		String curdate = MyUtils.formatDate(now);
+		return curdate;
+	}
+	
+	private String moveDate(String date, int offset) {
+		Date d = MyUtils.parseDate(date);
+		if (d == null) return "";
+		
+		long time = d.getTime() + offset*86400*1000;
+		return MyUtils.formatDate(time);
+	}
+	
+	private void freshQueryBtn(boolean today, String qdate) {
+		if (today) {
+			query_btn2.setText(qdate);
+			query_prior.setEnabled(true);
+			query_next.setEnabled(true);
+		}
+		else {
+			query_btn2.setText(R.string.label_query);
+			query_prior.setEnabled(false);
+			query_next.setEnabled(false);
+		}
+	}
+
 
 }

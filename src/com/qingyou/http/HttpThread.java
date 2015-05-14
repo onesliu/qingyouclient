@@ -38,6 +38,8 @@ public class HttpThread {
 	private SetOrders setorder = new SetOrders();
 	private GetSpecials specials = new GetSpecials();
 	private QueryOrders queryorder = new QueryOrders();
+	private PayQuery payquery = new PayQuery();
+	private AlertPay alertpay = new AlertPay();
 	private Bundle data = new Bundle();
 	
 	private Context c;
@@ -161,6 +163,52 @@ public class HttpThread {
 		}
 
 		return specials.data.getBundle("specials");
+	}
+	
+	public boolean PayQuery(long orderid) {
+		data.clear();
+		data.putString("token", token);
+		data.putString("orderid", "" + orderid);
+		if (payquery.makeSendBuffer(data) != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "支付查询参数错误");
+			Log.e(payquery.getClass().getSimpleName(), payquery.getErrStr());
+			return false;
+		}
+		
+		if (payquery.SyncRequest("GET") != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "支付查询出错");
+			Log.e(payquery.getClass().getSimpleName(), payquery.getErrStr());
+			return false;
+		}
+		
+		if (payquery.data.getInt("status") != 0) {
+			return false;
+		}
+
+		return true;
+	}
+	
+	public boolean AlertPay(long orderid) {
+		data.clear();
+		data.putString("token", token);
+		data.putString("orderid", "" + orderid);
+		if (alertpay.makeSendBuffer(data) != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "支付提醒参数错误");
+			Log.e(alertpay.getClass().getSimpleName(), alertpay.getErrStr());
+			return false;
+		}
+		
+		if (alertpay.SyncRequest("GET") != HttpPacket.ERR_NONE) {
+			sendMsg(NET_ERROR, "支付提醒出错");
+			Log.e(alertpay.getClass().getSimpleName(), alertpay.getErrStr());
+			return false;
+		}
+		
+		if (alertpay.data.getInt("status") != 0) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private void sendMsg(int msgid, String str) {

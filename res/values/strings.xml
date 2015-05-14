@@ -32,9 +32,11 @@
     <string name="label_scan">扫描条码</string>
     <string name="label_rescan">重扫</string>
     <string name="label_deliver">配送完成</string>
+    <string name="label_function">订单处理</string>
     <string name="label_return">返回</string>
     <string name="label_ok">确定</string>
     <string name="label_cashpay">(到付)</string>
+    <string name="label_query">查询</string>
     <string name="ask_deliver">真的配送完毕吗？</string>
     <string name="alert_nodata">没有订单数据</string>
     <string name="alert_nocode">不是当前订单的条码</string>
@@ -52,5 +54,16 @@
     <string name="alert_login_err">登录失败</string>
     <string name="label_login">请输入业务员帐号和密码：</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="order_feature">
+        <item>改状态-待称重</item>
+        <item>改状态-待付款</item>
+        <item>改状态-待配送</item>
+        <item>改状态-待配送（到付）</item>
+        <item>改状态-已完成</item>
+        <item>改状态-已退款</item>
+        <item>改状态-已取消</item>
+        <item>支付查询</item>
+        <item>发送付款提醒</item>
+    </string-array>
     
 </resources>
