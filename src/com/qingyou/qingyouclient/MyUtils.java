@@ -29,8 +29,13 @@ public class MyUtils {
 	}
 	
 	static SimpleDateFormat mDateFormat = (SimpleDateFormat)DateFormat.getDateInstance();
-	static String formatDateTime(long time) {
+	static String formatShortDateTime(long time) {
         mDateFormat.applyPattern("MM-dd HH:mm");
+        return mDateFormat.format(new Date(time));
+    }
+	
+	static String formatDateTime(long time) {
+        mDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
         return mDateFormat.format(new Date(time));
     }
 	

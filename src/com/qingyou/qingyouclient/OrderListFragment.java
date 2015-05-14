@@ -114,6 +114,7 @@ public class OrderListFragment extends Fragment {
 					HttpThread http = HttpThread.getInstance(null);
 					if (http == null) return;
 					Bundle specials = http.GetSpecials();
+					if (specials == null) return;
 					
 					Intent intent = new Intent();
 					intent.setClass(getActivity(), ActivityQuerySettings.class);

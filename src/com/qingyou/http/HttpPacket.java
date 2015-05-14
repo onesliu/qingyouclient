@@ -1,6 +1,7 @@
 package com.qingyou.http;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -54,7 +55,8 @@ public abstract class HttpPacket {
 	
 	protected String getTime(long time)
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat sdf = (SimpleDateFormat)DateFormat.getDateInstance();
+		sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
 		return sdf.format(new Date(time));
 	}
 	
@@ -93,8 +95,10 @@ public abstract class HttpPacket {
             		synchronized (lock) {
             			rlt = HttpUtility.openUrl(context, url, httpMethod, params);
             		}
+                } catch (RuntimeException e) {
+                	exp = new ProtocolException(e);
                 } catch (Exception e) {
-                	exp = e;
+                	exp = new ProtocolException(e);
                 }
             }
 		};
