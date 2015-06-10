@@ -15,7 +15,7 @@ public class SoundPlayer {
 	private HashMap<Integer, Integer> soundPoolMap;
 
 	private SoundPlayer(Context context) {
-		soundPool = new SoundPool(4, AudioManager.STREAM_MUSIC, 100);
+		soundPool = new SoundPool(4, AudioManager.STREAM_RING, 100);
 		soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
 			@Override
 			public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
@@ -42,16 +42,18 @@ public class SoundPlayer {
 	}
 
 	public void playSound(int type, int vibrate) {
+		/*
 		AudioManager mgr = (AudioManager) context
 				.getSystemService(Context.AUDIO_SERVICE);
-		float streamVolumeCurrent = mgr
-				.getStreamVolume(AudioManager.STREAM_MUSIC);
-		float streamVolumeMax = mgr
-				.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-		float volume = streamVolumeCurrent / streamVolumeMax;
 
+		int streamVolumeMax = mgr
+				.getStreamMaxVolume(AudioManager.STREAM_RING);
+		
+		mgr.setStreamVolume(AudioManager.STREAM_RING, streamVolumeMax, 0);
+		*/
+		
 		/* 使用正确音量播放声音 */
-		soundPool.play(soundPoolMap.get(type), volume, volume, 1, 0, 1f);
+		soundPool.play(soundPoolMap.get(type), 1, 1, 1, 0, 1f);
 		
 		//震动
 		if (vibrate > 0) {

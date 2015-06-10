@@ -327,12 +327,15 @@ public class ActivityOrderDetail extends Activity {
                          switch(select_which) {
                          case 0:
                         	 status = OrderStatus.ORDER_STATUS_WAITING;
+                        	 order.iscash = 0;
                         	 break;
                          case 1:
                         	 status = OrderStatus.ORDER_STATUS_PAYING;
+                        	 order.iscash = 0;
                         	 break;
                          case 2:
                         	 status = OrderStatus.ORDER_STATUS_SCALED;
+                        	 order.iscash = 0;
                         	 break;
                          case 3:
                         	 status = OrderStatus.ORDER_STATUS_SCALED;

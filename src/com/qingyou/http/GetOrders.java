@@ -75,11 +75,17 @@ public class GetOrders extends HttpPacket {
 				o.shipping_name = order.getString("shipping_name");
 				o.shipping_phone = order.getString("shipping_telephone");
 				o.shipping_addr = order.getString("shipping_addr");
-				o.shipping_time = order.getString("shipping_time");
+				if (order.getString("shipping_time") != null)
+					o.shipping_time = order.getString("shipping_time");
+				else
+					o.shipping_time = "";
+				o.comment = order.getString("comment");
 				o.iscash = order.getInt("iscash");
 				o.costpay = order.getDouble("costpay");
+				o.cashpay = order.getDouble("cashpay");
+				o.ismodify = order.getInt("ismodify");
+				
 				o.order_type = order.getInt("order_type");
-				o.comment = "";
 				
 				productArr = order.getJSONArray("products");
 				

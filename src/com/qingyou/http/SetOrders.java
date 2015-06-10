@@ -78,6 +78,7 @@ public class SetOrders extends HttpPacket {
 			order.put("productSubject", oorder.productSubject);
 			order.put("costpay", oorder.costpay);
 			order.put("cashpay", oorder.cashpay);
+			order.put("iscash", oorder.iscash);
 			
 			if (oorder.product_size() > 0) {
 				productArr = new JSONArray();

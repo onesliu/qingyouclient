@@ -161,7 +161,7 @@ public class OrderList implements Parcelable {
 					SoundPlayer.getInstance().playSound(1, 1);
 			}
 			else if (o_old != null) {
-				if (o_old.order_status_orign != o_new.order_status_orign) {
+				if (o_old.equals(o_new) == false) {
 					//有修改订单，报警
 					new_orders.add(o_new);
 					itr.remove();

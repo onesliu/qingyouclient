@@ -23,6 +23,7 @@ public class Order implements Parcelable {
 	public double costpay = 0;
 	public double cashpay = 0;
 	public int iscash = 0;
+	public int ismodify = 0;
 	
 	public int order_type = 0;
 	public int order_status_orign = 0;
@@ -30,6 +31,37 @@ public class Order implements Parcelable {
 	public boolean is_delete = false;
 
 	public List<Product> products;
+	
+	//=========================equals======================================
+	@Override
+	public boolean equals(Object oo) {
+		if (oo instanceof Order) {
+			Order o = (Order)oo;
+			if (order_id == o.order_id &&
+				order_status == o.order_status &&
+				order_createtime.equals(o.order_createtime) &&
+				customer_id == o.customer_id &&
+				customer_name.equals(o.customer_name) &&
+				customer_phone.equals(o.customer_phone) &&
+				shipping_name.equals(o.shipping_name) &&
+				shipping_phone.equals(o.shipping_phone) &&
+				shipping_addr.equals(o.shipping_addr) &&
+				shipping_time.equals(o.shipping_time) &&
+				comment.equals(o.comment) &&
+				costpay == o.costpay &&
+				cashpay == o.cashpay &&
+				iscash == o.iscash &&
+				ismodify == o.ismodify &&
+				order_type == o.order_type &&
+				order_status_orign == o.order_status_orign &&
+				productSubject.equals(o.productSubject)
+			)
+				return true;
+			else
+				return false;
+		}
+		return super.equals(oo);
+	}
 	
 	//=========================Parcel======================================
 	
@@ -45,7 +77,11 @@ public class Order implements Parcelable {
 		shipping_addr = in.readString();
 		shipping_time = in.readString();
 		comment = in.readString();
+		costpay = in.readDouble();
+		cashpay = in.readDouble();
 		iscash = in.readInt();
+		ismodify = in.readInt();
+
 		order_type = in.readInt();
 		order_status_orign = in.readInt();
 		productSubject = in.readString();
@@ -72,7 +108,10 @@ public class Order implements Parcelable {
 		dest.writeString(shipping_addr);
 		dest.writeString(shipping_time);
 		dest.writeString(comment);
+		dest.writeDouble(costpay);
+		dest.writeDouble(cashpay);
 		dest.writeInt(iscash);
+		dest.writeInt(ismodify);
 		dest.writeInt(order_type);
 		dest.writeInt(order_status_orign);
 		dest.writeString(productSubject);
